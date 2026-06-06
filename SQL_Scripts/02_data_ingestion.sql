@@ -1,11 +1,24 @@
+-- ============================================
+-- CX Intelligence Platform
+-- Data Ingestion & ETL Process
+-- ============================================
+
 USE CX_Analytics_DW;
 GO
 
 -- ============================================
--- LOAD DIM_AGENT
+-- CLEAN TARGET TABLES
 -- ============================================
 
-INSERT INTO Dim_Agent
+DELETE FROM dbo.Fact_Interactions;
+DELETE FROM dbo.Dim_Agent;
+GO
+
+-- ============================================
+-- LOAD AGENT DIMENSION
+-- ============================================
+
+INSERT INTO dbo.Dim_Agent
 (
     AgentID,
     AgentName,
@@ -14,20 +27,19 @@ INSERT INTO Dim_Agent
 )
 SELECT DISTINCT
 
-    CAST(agent_id AS INT),
+    agent_id,
     agent_name,
     team_leader,
     department
 
-FROM Staging_Interactions;
-
+FROM dbo.Staging_Interactions;
 GO
 
 -- ============================================
--- LOAD FACT_INTERACTIONS
+-- LOAD FACT TABLE
 -- ============================================
 
-INSERT INTO Fact_Interactions
+INSERT INTO dbo.Fact_Interactions
 (
     InteractionID,
     InteractionDateTime,
@@ -44,30 +56,40 @@ SELECT
 
     CAST(s.interaction_id AS UNIQUEIDENTIFIER),
 
-    CAST(s.timestamp AS DATETIME2),
+    s.timestamp,
 
-    CAST(s.customer_id AS INT),
+    s.customer_id,
 
-    CAST(s.agent_id AS INT),
+    s.agent_id,
 
     dc.ChannelID,
 
     dcat.CategoryID,
 
-    CAST(s.duration_seconds AS INT),
+    s.duration_seconds,
 
     s.resolution_status,
 
-    CAST(s.reopened_flag AS BIT),
+    s.reopened_flag,
 
-    CAST(s.satisfaction_score AS INT)
+    s.satisfaction_score
 
-FROM Staging_Interactions s
+FROM dbo.Staging_Interactions s
 
-INNER JOIN Dim_Channel dc
+INNER JOIN dbo.Dim_Channel dc
     ON s.channel = dc.ChannelName
 
-INNER JOIN Dim_Category dcat
+INNER JOIN dbo.Dim_Category dcat
     ON s.category = dcat.CategoryName;
+GO
 
+-- ============================================
+-- VALIDATION
+-- ============================================
+
+SELECT COUNT(*) AS TotalAgents
+FROM dbo.Dim_Agent;
+
+SELECT COUNT(*) AS TotalInteractions
+FROM dbo.Fact_Interactions;
 GO
