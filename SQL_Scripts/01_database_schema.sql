@@ -3,19 +3,31 @@
 -- Database Schema Creation
 -- ============================================
 
-IF EXISTS (SELECT name FROM sys.databases WHERE name = N'CX_Analytics_DW')
-BEGIN
-    ALTER DATABASE CX_Analytics_DW
-    SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-
-    DROP DATABASE CX_Analytics_DW;
-END
-GO
-
-CREATE DATABASE CX_Analytics_DW;
-GO
-
 USE CX_Analytics_DW;
+GO
+
+-- ============================================
+-- CLEANUP
+-- ============================================
+
+IF OBJECT_ID('Fact_Interactions','U') IS NOT NULL
+    DROP TABLE Fact_Interactions;
+GO
+
+IF OBJECT_ID('Dim_Agent','U') IS NOT NULL
+    DROP TABLE Dim_Agent;
+GO
+
+IF OBJECT_ID('Dim_Category','U') IS NOT NULL
+    DROP TABLE Dim_Category;
+GO
+
+IF OBJECT_ID('Dim_Channel','U') IS NOT NULL
+    DROP TABLE Dim_Channel;
+GO
+
+IF OBJECT_ID('Dim_Calendar','U') IS NOT NULL
+    DROP TABLE Dim_Calendar;
 GO
 
 -- ============================================
@@ -23,30 +35,52 @@ GO
 -- ============================================
 
 CREATE TABLE Dim_Channel (
+
     ChannelID INT IDENTITY(1,1) PRIMARY KEY,
+
     ChannelName VARCHAR(20) NOT NULL,
+
     IsDigital BIT NOT NULL
+
 );
+GO
 
 CREATE TABLE Dim_Category (
+
     CategoryID INT IDENTITY(1,1) PRIMARY KEY,
+
     CategoryName VARCHAR(50) NOT NULL
+
 );
+GO
 
 CREATE TABLE Dim_Agent (
+
     AgentID INT PRIMARY KEY,
+
     AgentName VARCHAR(100) NOT NULL,
+
     TeamLeader VARCHAR(100) NOT NULL,
+
     Department VARCHAR(50) NOT NULL
+
 );
+GO
 
 CREATE TABLE Dim_Calendar (
+
     DateKey DATE PRIMARY KEY,
+
     CalendarYear INT,
+
     CalendarMonth INT,
+
     MonthName VARCHAR(20),
+
     QuarterNumber INT
+
 );
+GO
 
 -- ============================================
 -- FACT TABLE
@@ -85,8 +119,8 @@ CREATE TABLE Fact_Interactions (
     CONSTRAINT FK_Fact_Agent
         FOREIGN KEY (AgentID)
         REFERENCES Dim_Agent(AgentID)
-);
 
+);
 GO
 
 -- ============================================
@@ -94,15 +128,21 @@ GO
 -- ============================================
 
 INSERT INTO Dim_Channel
-(ChannelName, IsDigital)
+(
+    ChannelName,
+    IsDigital
+)
 VALUES
 ('Chat',1),
 ('Voice',0),
 ('Email',1),
 ('Bot',1);
+GO
 
 INSERT INTO Dim_Category
-(CategoryName)
+(
+    CategoryName
+)
 VALUES
 ('Technical Support'),
 ('Billing'),
@@ -110,5 +150,4 @@ VALUES
 ('Product Information'),
 ('Software Update'),
 ('Account Access');
-
 GO
