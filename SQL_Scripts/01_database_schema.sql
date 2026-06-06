@@ -3,7 +3,6 @@
 -- Database Schema Creation
 -- ============================================
 
--- Recreate the database for dev env.
 IF EXISTS (SELECT name FROM sys.databases WHERE name = N'CX_Analytics_DW')
 BEGIN
     ALTER DATABASE CX_Analytics_DW
@@ -36,9 +35,9 @@ CREATE TABLE Dim_Category (
 
 CREATE TABLE Dim_Agent (
     AgentID INT PRIMARY KEY,
-    AgentName VARCHAR(100),
-    TeamLeader VARCHAR(100),
-    Department VARCHAR(50)
+    AgentName VARCHAR(100) NOT NULL,
+    TeamLeader VARCHAR(100) NOT NULL,
+    Department VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE Dim_Calendar (
@@ -54,19 +53,26 @@ CREATE TABLE Dim_Calendar (
 -- ============================================
 
 CREATE TABLE Fact_Interactions (
+
     InteractionID UNIQUEIDENTIFIER PRIMARY KEY,
+
     InteractionDateTime DATETIME2 NOT NULL,
 
     CustomerID INT NOT NULL,
 
-    AgentID INT,
+    AgentID INT NOT NULL,
+
     ChannelID INT NOT NULL,
+
     CategoryID INT NOT NULL,
 
-    DurationSeconds INT,
-    ResolutionStatus VARCHAR(20),
-    ReopenedFlag BIT,
-    SatisfactionScore INT,
+    DurationSeconds INT NOT NULL,
+
+    ResolutionStatus VARCHAR(20) NOT NULL,
+
+    ReopenedFlag BIT NOT NULL,
+
+    SatisfactionScore INT NOT NULL,
 
     CONSTRAINT FK_Fact_Channel
         FOREIGN KEY (ChannelID)
@@ -80,19 +86,20 @@ CREATE TABLE Fact_Interactions (
         FOREIGN KEY (AgentID)
         REFERENCES Dim_Agent(AgentID)
 );
+
 GO
 
 -- ============================================
--- INITIAL DIMENSION DATA
+-- STATIC DIMENSIONS
 -- ============================================
 
 INSERT INTO Dim_Channel
 (ChannelName, IsDigital)
 VALUES
-('Chat', 1),
-('Voice', 0),
-('Email', 1),
-('Bot', 1);
+('Chat',1),
+('Voice',0),
+('Email',1),
+('Bot',1);
 
 INSERT INTO Dim_Category
 (CategoryName)
@@ -100,6 +107,8 @@ VALUES
 ('Technical Support'),
 ('Billing'),
 ('Shipping'),
-('Product Info'),
-('Software Update');
+('Product Information'),
+('Software Update'),
+('Account Access');
+
 GO
