@@ -1,7 +1,21 @@
 -- ============================================
 -- CX Intelligence Platform
 -- Database Schema Creation
+-- Version: 1.0
 -- ============================================
+
+-- ============================================
+-- CREATE DATABASE IF NOT EXISTS
+-- ============================================
+
+USE master;
+GO
+
+IF DB_ID('CX_Analytics_DW') IS NULL
+BEGIN
+    CREATE DATABASE CX_Analytics_DW;
+END
+GO
 
 USE CX_Analytics_DW;
 GO
@@ -10,52 +24,50 @@ GO
 -- CLEANUP
 -- ============================================
 
-IF OBJECT_ID('Fact_Interactions','U') IS NOT NULL
-    DROP TABLE Fact_Interactions;
+IF OBJECT_ID('dbo.Fact_Interactions','U') IS NOT NULL
+    DROP TABLE dbo.Fact_Interactions;
 GO
 
-IF OBJECT_ID('Dim_Agent','U') IS NOT NULL
-    DROP TABLE Dim_Agent;
+IF OBJECT_ID('dbo.Dim_Agent','U') IS NOT NULL
+    DROP TABLE dbo.Dim_Agent;
 GO
 
-IF OBJECT_ID('Dim_Category','U') IS NOT NULL
-    DROP TABLE Dim_Category;
+IF OBJECT_ID('dbo.Dim_Category','U') IS NOT NULL
+    DROP TABLE dbo.Dim_Category;
 GO
 
-IF OBJECT_ID('Dim_Channel','U') IS NOT NULL
-    DROP TABLE Dim_Channel;
+IF OBJECT_ID('dbo.Dim_Channel','U') IS NOT NULL
+    DROP TABLE dbo.Dim_Channel;
 GO
 
-IF OBJECT_ID('Dim_Calendar','U') IS NOT NULL
-    DROP TABLE Dim_Calendar;
+IF OBJECT_ID('dbo.Dim_Calendar','U') IS NOT NULL
+    DROP TABLE dbo.Dim_Calendar;
 GO
 
 -- ============================================
--- DIMENSIONS
+-- DIMENSION TABLES
 -- ============================================
 
-CREATE TABLE Dim_Channel (
-
+CREATE TABLE dbo.Dim_Channel
+(
     ChannelID INT IDENTITY(1,1) PRIMARY KEY,
 
     ChannelName VARCHAR(20) NOT NULL,
 
     IsDigital BIT NOT NULL
-
 );
 GO
 
-CREATE TABLE Dim_Category (
-
+CREATE TABLE dbo.Dim_Category
+(
     CategoryID INT IDENTITY(1,1) PRIMARY KEY,
 
     CategoryName VARCHAR(50) NOT NULL
-
 );
 GO
 
-CREATE TABLE Dim_Agent (
-
+CREATE TABLE dbo.Dim_Agent
+(
     AgentID INT PRIMARY KEY,
 
     AgentName VARCHAR(100) NOT NULL,
@@ -63,22 +75,20 @@ CREATE TABLE Dim_Agent (
     TeamLeader VARCHAR(100) NOT NULL,
 
     Department VARCHAR(50) NOT NULL
-
 );
 GO
 
-CREATE TABLE Dim_Calendar (
-
+CREATE TABLE dbo.Dim_Calendar
+(
     DateKey DATE PRIMARY KEY,
 
-    CalendarYear INT,
+    CalendarYear INT NOT NULL,
 
-    CalendarMonth INT,
+    CalendarMonth INT NOT NULL,
 
-    MonthName VARCHAR(20),
+    MonthName VARCHAR(20) NOT NULL,
 
-    QuarterNumber INT
-
+    QuarterNumber INT NOT NULL
 );
 GO
 
@@ -86,8 +96,8 @@ GO
 -- FACT TABLE
 -- ============================================
 
-CREATE TABLE Fact_Interactions (
-
+CREATE TABLE dbo.Fact_Interactions
+(
     InteractionID UNIQUEIDENTIFIER PRIMARY KEY,
 
     InteractionDateTime DATETIME2 NOT NULL,
@@ -110,16 +120,15 @@ CREATE TABLE Fact_Interactions (
 
     CONSTRAINT FK_Fact_Channel
         FOREIGN KEY (ChannelID)
-        REFERENCES Dim_Channel(ChannelID),
+        REFERENCES dbo.Dim_Channel(ChannelID),
 
     CONSTRAINT FK_Fact_Category
         FOREIGN KEY (CategoryID)
-        REFERENCES Dim_Category(CategoryID),
+        REFERENCES dbo.Dim_Category(CategoryID),
 
     CONSTRAINT FK_Fact_Agent
         FOREIGN KEY (AgentID)
-        REFERENCES Dim_Agent(AgentID)
-
+        REFERENCES dbo.Dim_Agent(AgentID)
 );
 GO
 
@@ -127,7 +136,7 @@ GO
 -- STATIC DIMENSIONS
 -- ============================================
 
-INSERT INTO Dim_Channel
+INSERT INTO dbo.Dim_Channel
 (
     ChannelName,
     IsDigital
@@ -139,7 +148,7 @@ VALUES
 ('Bot',1);
 GO
 
-INSERT INTO Dim_Category
+INSERT INTO dbo.Dim_Category
 (
     CategoryName
 )
@@ -150,4 +159,57 @@ VALUES
 ('Product Information'),
 ('Software Update'),
 ('Account Access');
+GO
+
+-- ============================================
+-- CALENDAR DIMENSION
+-- ============================================
+
+DECLARE @StartDate DATE = '2026-01-01';
+DECLARE @EndDate DATE = '2026-12-31';
+
+WHILE @StartDate <= @EndDate
+BEGIN
+
+    INSERT INTO dbo.Dim_Calendar
+    (
+        DateKey,
+        CalendarYear,
+        CalendarMonth,
+        MonthName,
+        QuarterNumber
+    )
+    VALUES
+    (
+        @StartDate,
+        YEAR(@StartDate),
+        MONTH(@StartDate),
+        DATENAME(MONTH,@StartDate),
+        DATEPART(QUARTER,@StartDate)
+    );
+
+    SET @StartDate = DATEADD(DAY,1,@StartDate);
+
+END
+GO
+
+-- ============================================
+-- VALIDATION
+-- ============================================
+
+SELECT 'Dim_Channel' AS TableName,
+       COUNT(*) AS Records
+FROM dbo.Dim_Channel
+
+UNION ALL
+
+SELECT 'Dim_Category',
+       COUNT(*)
+FROM dbo.Dim_Category
+
+UNION ALL
+
+SELECT 'Dim_Calendar',
+       COUNT(*)
+FROM dbo.Dim_Calendar;
 GO
