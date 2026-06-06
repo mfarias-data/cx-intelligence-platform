@@ -2,55 +2,87 @@
 
 End-to-end Customer Experience Analytics platform designed to transform omnichannel customer service data into actionable business insights.
 
-This project simulates a large-scale enterprise customer support operation and demonstrates the application of Data Engineering, Analytics, Business Intelligence, and Automation practices to identify operational bottlenecks and improve customer experience performance.
+This project simulates a large-scale enterprise customer support operation and demonstrates modern Data Engineering, Data Analytics, Business Intelligence, and dimensional modeling practices.
+
+---
+
+## Project Overview
+
+The CX Intelligence Platform was developed to simulate a real-world Customer Experience environment, enabling the ingestion, transformation, modeling, and analysis of customer support interactions across multiple service channels.
+
+The solution follows a complete analytics workflow:
+
+```text
+CSV Dataset
+    ↓
+Staging Layer
+    ↓
+ETL Process
+    ↓
+Dimensional Data Warehouse
+    ↓
+Semantic Layer
+    ↓
+Power BI Dashboard
+```
 
 ---
 
 ## Business Scenario
 
-A large enterprise observed a decline in customer support efficiency following a digital service transformation initiative.
+A large enterprise seeks to improve customer experience performance by understanding operational trends across its customer support organization.
 
-Key indicators revealed:
+The project enables the analysis of:
 
-- 15% reduction in First Contact Resolution (FCR)
-- Increase in Average Handle Time (AHT)
-- Growth in ticket reopen rates
-- Lower customer satisfaction scores
-
-The objective of this project is to identify root causes, measure operational impact, and provide data-driven recommendations.
+- Customer Satisfaction (CSAT)
+- Resolution Performance
+- Interaction Volume
+- Reopen Rate
+- Average Handle Time (AHT)
+- Agent Performance
+- Channel Effectiveness
+- Category Trends
 
 ---
 
 ## Project Goals
 
-- Build a structured Customer Experience analytics environment
-- Implement a Star Schema data model
-- Develop KPI monitoring dashboards
-- Perform root cause analysis
-- Automate SLA monitoring processes
-- Generate executive-level business insights
+- Build a dimensional data warehouse using Star Schema modeling
+- Implement repeatable ETL processes
+- Create business-oriented analytical views
+- Develop executive and operational KPIs
+- Support Power BI dashboard development
+- Demonstrate end-to-end analytics architecture
 
 ---
 
-## Tech Stack
+## Technology Stack
 
 ### Data Engineering
-- SQL Server
+
+- SQL Server Express
 - T-SQL
-- ETL / ELT Processes
-- Views
-- Common Table Expressions (CTEs)
-- Window Functions
+- ETL Processes
+- Star Schema Modeling
+- Dimensional Data Warehouse
 
 ### Analytics & BI
+
 - Power BI
 - DAX
-- Star Schema Modeling
 - KPI Development
+- Business Analytics
 
-### Automation
+### Data Generation
+
 - Python
-- SLA Alert Automation
+- Pandas
+- Synthetic Data Generation
+
+### Version Control
+
+- Git
+- GitHub
 
 ---
 
@@ -59,12 +91,20 @@ The objective of this project is to identify root causes, measure operational im
 ```text
 cx-intelligence-platform/
 
-├── SQL_Scripts/
-├── Data_Modeling/
-├── PowerBI_Dashboard/
-├── Analytics_Report/
-├── Automation/
-├── Sample_Data/
+├── sql/
+│   ├── 01_database_schema.sql
+│   ├── 02_data_ingestion.sql
+│   ├── 03_semantic_layer.sql
+│   └── 04_data_quality_checks.sql
+│
+├── sample_data/
+│
+├── Documentation/
+│   ├── architecture.md
+│   ├── data_dictionary.md
+│   ├── powerbi_design.md
+│   └── root_cause_analysis.md
+│
 └── README.md
 ```
 
@@ -80,70 +120,90 @@ The solution follows a Star Schema architecture.
 
 ### Dimension Tables
 
-- Dim_Channel
 - Dim_Agent
+- Dim_Channel
 - Dim_Category
 - Dim_Calendar
 
 ---
 
+## Semantic Layer
+
+The project exposes business-ready analytical views for reporting and dashboard consumption.
+
+### Available Views
+
+- vw_CustomerExperience
+- vw_AgentPerformance
+- vw_ChannelPerformance
+- vw_CategoryPerformance
+- vw_ExecutiveDashboard
+
+---
+
 ## Key Performance Indicators
-
-### SLA Compliance
-
-Percentage of interactions handled within the agreed service level.
-
-### First Contact Resolution (FCR)
-
-Percentage of customer issues resolved during the first interaction.
-
-### Average Handle Time (AHT)
-
-Average interaction handling duration.
 
 ### Customer Satisfaction (CSAT)
 
 Average customer satisfaction score.
 
-### Backlog Evolution
+### Average Handle Time (AHT)
 
-Trend analysis of opened versus closed interactions over time.
+Average interaction duration.
+
+### Resolution Rate
+
+Percentage of interactions successfully resolved.
+
+### Reopen Rate
+
+Percentage of interactions reopened after resolution.
+
+### Interaction Volume
+
+Total interactions by period, channel, category, or agent.
+
+### Agent Performance
+
+Operational performance indicators by agent and team.
 
 ---
 
-## Root Cause Analysis
+## Data Quality
 
-Analysis identified a significant increase in unresolved interactions within a specific support category and channel combination.
+The project includes validation scripts to ensure:
 
-The investigation revealed:
-
-- Elevated ticket reopen rates
-- Decreased FCR performance
-- Increased operational workload
-- Reduced customer satisfaction
-
-Business recommendations were developed based on these findings.
-
----
-
-## Automation
-
-The project includes an SLA monitoring solution capable of identifying service breaches and generating operational alerts.
+- Referential integrity
+- Data completeness
+- Consistency checks
+- ETL validation
 
 ---
 
 ## Sample Dataset
 
-A synthetic dataset was generated using Python to simulate real-world omnichannel customer support operations.
+A synthetic dataset was generated using Python to simulate real-world customer support operations.
 
 Dataset characteristics:
 
-- 5,000+ interactions
-- Multiple service channels
+- 20,000 interactions
+- Multiple support channels
+- Multiple support categories
 - Resolution tracking
 - Reopen indicators
 - Customer satisfaction scores
-- Service-level monitoring
+- Agent performance data
+
+---
+
+## Documentation
+
+Additional project documentation is available in the `/Documentation` folder:
+
+- Architecture Overview
+- Data Dictionary
+- Power BI Dashboard Design
+- Root Cause Analysis Framework
 
 ---
 
@@ -151,4 +211,4 @@ Dataset characteristics:
 
 Maurício Farias Machado
 
-Data Analytics | Business Intelligence | Customer Experience Analytics
+Data Analytics | Business Intelligence | Data Engineering
